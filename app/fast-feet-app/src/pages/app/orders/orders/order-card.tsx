@@ -12,6 +12,7 @@ import { ptBR } from "date-fns/locale";
 import packageImg from "@/assets/package.svg";
 import { OrderTimeline } from "./order-timeline";
 import { ChevronRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface OrderCardProps {
   order: {
@@ -33,7 +34,6 @@ export function OrderCard({ order }: OrderCardProps) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <img src={packageImg} />
-            {/* Apliquei a classe truncate no título */}
             <span className="truncate max-w-[200px]">{order.title}</span>
           </div>
           <span className="text-xs text-gray-500">{formattedDate}</span>
@@ -43,11 +43,14 @@ export function OrderCard({ order }: OrderCardProps) {
         <OrderTimeline status={order.status} />
       </CardContent>
       <CardFooter className="p-0">
-        <Button className="w-full py-3 rounded-t-none">
-          <div className="w-full flex items-center justify-between">
+        <Button className="w-full py-3 rounded-t-none" asChild>
+          <Link
+            to={`/orders/${order.id}`}
+            className="w-full flex items-center justify-between"
+          >
             Detalhes
             <ChevronRight />
-          </div>
+          </Link>
         </Button>
       </CardFooter>
     </Card>

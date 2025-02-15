@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus } from "lucide-react";
-import { Helmet } from "react-helmet-async";
 import { Link, useSearchParams } from "react-router-dom";
 import { OrderCard } from "./order-card";
 import { getOrders } from "@/api/get-orders";
@@ -10,6 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import packageImg from "@/assets/package.svg";
 import { OrderCardSkeleton } from "./order-card-skeleton";
+import { Helmet } from "react-helmet-async";
 
 const ORDERS_LIMIT_PAGE = 9;
 
