@@ -87,7 +87,7 @@ export function CreateRecipientForm() {
           <AlertDescription>
             <p>Deseja criar uma encomenda para esse destinatário agora?</p>
             <Button className="mt-2" asChild>
-              <Link to="/recipients">Criar encomenda</Link>
+              <Link to="/orders">Criar encomenda</Link>
             </Button>
           </AlertDescription>
         </Alert>

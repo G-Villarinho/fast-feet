@@ -8,6 +8,7 @@ export enum OrderStatus {
 
 export interface GetOrdersQuery {
   pageIndex?: number | null;
+  limit?: number | null;
 }
 
 export interface GetOrdersResponse {
@@ -23,10 +24,11 @@ export interface GetOrdersResponse {
   limit: number;
 }
 
-export async function GetOrders({ pageIndex }: GetOrdersQuery) {
+export async function getOrders({ pageIndex, limit }: GetOrdersQuery) {
   const response = await api.get<GetOrdersResponse>("/orders", {
     params: {
       pageIndex,
+      limit
     },
   });
 

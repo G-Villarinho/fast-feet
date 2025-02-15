@@ -55,7 +55,7 @@ export function RecipientSelect({ value, onChange }: RecipientSelectProps) {
       <SelectTrigger className="w-full bg-zinc-100 h-11">
         <SelectValue placeholder="Selecione um destinatário" />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent className="w-[338px]">
         <div className="p-2">
           <Input
             placeholder="Pesquisar destinatário..."
@@ -78,10 +78,10 @@ export function RecipientSelect({ value, onChange }: RecipientSelectProps) {
             >
               <div className="flex items-center gap-2">
                 <ContactRound className="h-5 w-5 text-gray-500" />
-                <span className="font-medium text-gray-900">
+                <span className="font-medium text-gray-900 truncate max-w-[140px]">
                   {recipient.fullName}
                 </span>
-                <span className="text-xs text-gray-500">
+                <span className="text-xs text-gray-500 truncate max-w-[140px]">
                   ({recipient.email})
                 </span>
               </div>
