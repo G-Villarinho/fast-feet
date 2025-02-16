@@ -6,11 +6,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useParams } from "react-router-dom";
 import { ClipboardList, Info } from "lucide-react";
 import { OrderDetailsSituation } from "./order-details-situation";
+import { OrderDetailsSkeleton } from "./order-details-skeleton";
 
 export function OrderDetails() {
   const { orderId } = useParams();
 
-  const { data: order } = useQuery({
+  const { data: order, isLoading } = useQuery({
     queryKey: ["order", orderId],
     queryFn: () => getOrder({ orderId }),
   });
@@ -19,6 +20,7 @@ export function OrderDetails() {
     <>
       <Helmet title="Pedido detalhes" />
       <div className="max-w-screen-2xl mx-auto w-full pb-10 -mt-24">
+        {isLoading && <OrderDetailsSkeleton />}
         {order && (
           <div className="flex flex-col md:flex-row gap-4 p-2 md:p-0">
             <Card className="border-none drop-shadow-sm md:w-1/2">
