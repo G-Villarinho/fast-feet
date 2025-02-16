@@ -13,6 +13,7 @@ var (
 	ErrOrderNotFound               = errors.New("order not found in database")
 	ErrCannotTransitionToDelivered = errors.New("cannot transition to 'Delivered' without passing through 'PicknUp'")
 	ErrCannotTransitionToPicknUp   = errors.New("cannot transition to 'PicknUp' unless the order is in 'Waiting' status")
+	ErrNotAssignedToOrder          = errors.New("delivery man is not assigned to this order")
 )
 
 type OrderStatus string
@@ -59,6 +60,25 @@ type OrderResponse struct {
 	CreatedAt time.Time   `json:"createdAt"`
 }
 
+type PickUpOrderResponse struct {
+	PicknUpAt time.Time `json:"picknUpAt"`
+}
+
+type DeliverOrderResponse struct {
+	DeliveryAt time.Time `json:"deliveryAt"`
+}
+
+type OrderDetailsResponse struct {
+	ID               uuid.UUID   `json:"id"`
+	Status           OrderStatus `json:"status"`
+	RecipientName    string      `json:"recipientName"`
+	RecipientAddress string      `json:"recipientAddress"`
+	RecipientZipcode int         `json:"recipientZipcode"`
+	CreatedAt        time.Time   `json:"createdAt"`
+	PicknUpAt        *time.Time  `json:"picknUpAt,omitempty"`
+	DeliveryAt       *time.Time  `json:"deliveryAt,omitempty"`
+}
+
 func (p *CreateOrderPayload) ToOrder() *Order {
 	return &Order{
 		BaseModel: BaseModel{
@@ -79,5 +99,28 @@ func (o *Order) ToOrderResponse() *OrderResponse {
 		Title:     o.Title,
 		Status:    o.Status,
 		CreatedAt: o.CreatedAt,
+	}
+}
+
+func (o *Order) ToOrderDetailsResponse() *OrderDetailsResponse {
+	var picknUpAt *time.Time
+	if o.PicknUpAt.Valid {
+		picknUpAt = &o.PicknUpAt.Time
+	}
+
+	var deliveryAt *time.Time
+	if o.DeliveryAt.Valid {
+		deliveryAt = &o.DeliveryAt.Time
+	}
+
+	return &OrderDetailsResponse{
+		ID:               o.ID,
+		Status:           o.Status,
+		RecipientName:    o.Recipient.FullName,
+		RecipientAddress: o.Recipient.Address,
+		RecipientZipcode: o.Recipient.Zipcode,
+		CreatedAt:        o.CreatedAt,
+		PicknUpAt:        picknUpAt,
+		DeliveryAt:       deliveryAt,
 	}
 }

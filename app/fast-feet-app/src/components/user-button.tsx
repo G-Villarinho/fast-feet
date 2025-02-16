@@ -33,11 +33,11 @@ export function UserButton({ userFullName, isFetchingUser }: UserButtonProps) {
 
   async function handleLogout() {
     try {
-      await logoutFn();
       navigate("/login");
+      await logoutFn();
     } catch {
       toast.error(
-        "Ocorreu um erro inesperado ao tentar realizar o login. Por favor, tente novamente."
+        "Ocorreu um erro inesperado ao tentar realizar o logout. Por favor, tente novamente."
       );
     }
   }

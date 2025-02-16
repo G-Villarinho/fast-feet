@@ -7,6 +7,7 @@ import { CreateOrder } from "@/pages/app/orders/create-order/create-order";
 import { Recipients } from "@/pages/app/recipients/recipients";
 import { CreateRecipient } from "@/pages/app/recipients/create-recipient/create-recipient";
 import { Orders } from "@/pages/app/orders/orders/orders";
+import { OrderDetails } from "./pages/app/orders/order-details/order-details";
 
 export const router = createBrowserRouter([
   {
@@ -17,6 +18,10 @@ export const router = createBrowserRouter([
       {
         path: "/orders",
         element: <Orders />,
+      },
+      {
+        path: "/orders/:orderId",
+        element: <OrderDetails />,
       },
       {
         path: "/create-order",

@@ -85,6 +85,7 @@ func SetupOrdersRoutes(e *echo.Echo, i *di.Injector) error {
 	v1Group.PATCH("/:orderId/status/pick-up", h.PickUpOrder)
 	v1Group.PATCH("/:orderId/status/deliver", h.DeliverOrder)
 	v1Group.GET("", h.GetOrders)
+	v1Group.GET("/:orderId", h.GetOrder)
 
 	return nil
 }

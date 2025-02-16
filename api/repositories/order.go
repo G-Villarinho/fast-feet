@@ -53,6 +53,7 @@ func (o *orderRepository) GetOrderByID(ctx context.Context, ID uuid.UUID) (*mode
 	if err := o.DB.
 		WithContext(ctx).
 		Where("id = ?", ID).
+		Preload("Recipient").
 		First(&order).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil

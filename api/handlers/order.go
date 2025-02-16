@@ -21,6 +21,7 @@ type OrderHandler interface {
 	PickUpOrder(ectx echo.Context) error
 	DeliverOrder(ectx echo.Context) error
 	GetOrders(ectx echo.Context) error
+	GetOrder(ectx echo.Context) error
 }
 
 type orderHandler struct {
@@ -95,7 +96,8 @@ func (o *orderHandler) PickUpOrder(ectx echo.Context) error {
 		return responses.NewCustomAPIErrorResponse(ectx, http.StatusBadRequest, "Parâmetro de busca de encomenda inválido.")
 	}
 
-	if err := o.os.PickUpOrder(ectx.Request().Context(), orderID); err != nil {
+	response, err := o.os.PickUpOrder(ectx.Request().Context(), orderID)
+	if err != nil {
 		log.Error(err.Error())
 
 		if errors.Is(err, models.ErrUserNotFoundInContext) {
@@ -111,13 +113,13 @@ func (o *orderHandler) PickUpOrder(ectx echo.Context) error {
 		}
 
 		if errors.Is(err, models.ErrCannotTransitionToPicknUp) {
-			return responses.NewCustomAPIErrorResponse(ectx, http.StatusBadRequest, "Não é possível entregar a encomenda que já foi entregue.")
+			return responses.NewCustomAPIErrorResponse(ectx, http.StatusBadRequest, "Não é possível entregar a encomenda que já foi entregue ou que foi retirada por outro entregador.")
 		}
 
 		return responses.InternalServerAPIErrorResponse(ectx)
 	}
 
-	return ectx.NoContent(http.StatusOK)
+	return ectx.JSON(http.StatusOK, response)
 }
 
 func (o *orderHandler) DeliverOrder(ectx echo.Context) error {
@@ -200,6 +202,44 @@ func (o *orderHandler) GetOrders(ectx echo.Context) error {
 		}
 
 		responses.InternalServerAPIErrorResponse(ectx)
+	}
+
+	return ectx.JSON(http.StatusOK, response)
+}
+
+func (o *orderHandler) GetOrder(ectx echo.Context) error {
+	log := slog.With(
+		slog.String("handler", "order"),
+		slog.String("func", "GetOrder"),
+	)
+
+	orderID, err := uuid.Parse(ectx.Param("orderId"))
+	if err != nil {
+		log.Warn(err.Error())
+		return responses.NewCustomAPIErrorResponse(ectx, http.StatusBadRequest, "Parâmetro de busca de encomenda inválido.")
+	}
+
+	response, err := o.os.GetOrder(ectx.Request().Context(), orderID)
+	if err != nil {
+		log.Error(err.Error())
+
+		if errors.Is(err, models.ErrUserNotFoundInContext) {
+			responses.AccessDeniedAPIErrorResponse(ectx)
+		}
+
+		if errors.Is(err, models.ErrInsufficientPermission) {
+			return responses.ForbiddenPermissionAPIErrorResponse(ectx)
+		}
+
+		if errors.Is(err, models.ErrOrderNotFound) {
+			return responses.NewCustomAPIErrorResponse(ectx, http.StatusNotFound, "Não foi encontrado nenhuma entrega.")
+		}
+
+		if errors.Is(err, models.ErrNotAssignedToOrder) {
+			return responses.NewCustomAPIErrorResponse(ectx, http.StatusConflict, "Você não está atribuído a esta entrega.")
+		}
+
+		return responses.InternalServerAPIErrorResponse(ectx)
 	}
 
 	return ectx.JSON(http.StatusOK, response)

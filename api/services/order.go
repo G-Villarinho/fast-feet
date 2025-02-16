@@ -15,9 +15,10 @@ import (
 
 type OrderService interface {
 	CreateOrder(ctx context.Context, payload models.CreateOrderPayload) (*models.CreateOrderResponse, error)
-	PickUpOrder(ctx context.Context, orderID uuid.UUID) error
+	PickUpOrder(ctx context.Context, orderID uuid.UUID) (*models.PickUpOrderResponse, error)
 	DeliverOrder(ctx context.Context, orderID uuid.UUID, payload models.DeliverOrderPayload) error
 	GetOrders(ctx context.Context, paginations *models.Pagination) (*models.PaginatedResponse[*models.OrderResponse], error)
+	GetOrder(ctx context.Context, orderID uuid.UUID) (*models.OrderDetailsResponse, error)
 }
 
 type orderService struct {
@@ -93,32 +94,32 @@ func (o *orderService) CreateOrder(ctx context.Context, payload models.CreateOrd
 	}, nil
 }
 
-func (o *orderService) PickUpOrder(ctx context.Context, orderID uuid.UUID) error {
+func (o *orderService) PickUpOrder(ctx context.Context, orderID uuid.UUID) (*models.PickUpOrderResponse, error) {
 	userID, found := request.UserID(ctx)
 	if !found {
-		return models.ErrUserNotFoundInContext
+		return nil, models.ErrUserNotFoundInContext
 	}
 
 	user, err := o.ur.GetUserByID(ctx, userID)
 	if err != nil {
-		return fmt.Errorf("get user by id %q: %w", userID, err)
+		return nil, fmt.Errorf("get user by id %q: %w", userID, err)
 	}
 
 	if models.Cannot(user.Role, models.UpdateStatus, models.Orders) {
-		return models.ErrInsufficientPermission
+		return nil, models.ErrInsufficientPermission
 	}
 
 	order, err := o.or.GetOrderByID(ctx, orderID)
 	if err != nil {
-		return fmt.Errorf("get order by id %q: %w", orderID, err)
+		return nil, fmt.Errorf("get order by id %q: %w", orderID, err)
 	}
 
 	if order == nil {
-		return models.ErrOrderNotFound
+		return nil, models.ErrOrderNotFound
 	}
 
 	if order.Status != models.Waiting {
-		return models.ErrCannotTransitionToDelivered
+		return nil, models.ErrCannotTransitionToDelivered
 	}
 
 	order.DeliverymanID = &userID
@@ -126,12 +127,14 @@ func (o *orderService) PickUpOrder(ctx context.Context, orderID uuid.UUID) error
 	order.Status = models.PicknUp
 
 	if err := o.or.UpdateOrder(ctx, *order); err != nil {
-		return fmt.Errorf("update order %q status: %w", orderID, err)
+		return nil, fmt.Errorf("update order %q status: %w", orderID, err)
 	}
 
 	// TODO: Notification recipient
 
-	return nil
+	return &models.PickUpOrderResponse{
+		PicknUpAt: order.PicknUpAt.Time,
+	}, nil
 }
 
 func (o *orderService) DeliverOrder(ctx context.Context, orderID uuid.UUID, payload models.DeliverOrderPayload) error {
@@ -209,4 +212,35 @@ func (o *orderService) GetOrders(ctx context.Context, pagination *models.Paginat
 	})
 
 	return paginatedOrdersResponse, nil
+}
+
+func (o *orderService) GetOrder(ctx context.Context, orderID uuid.UUID) (*models.OrderDetailsResponse, error) {
+	userID, found := request.UserID(ctx)
+	if !found {
+		return nil, models.ErrUserNotFoundInContext
+	}
+
+	user, err := o.ur.GetUserByID(ctx, userID)
+	if err != nil {
+		return nil, fmt.Errorf("get user by id %q: %w", userID, err)
+	}
+
+	if models.Cannot(user.Role, models.Read, models.Deliveries) {
+		return nil, models.ErrInsufficientPermission
+	}
+
+	order, err := o.or.GetOrderByID(ctx, orderID)
+	if err != nil {
+		return nil, fmt.Errorf("get order by id %q: %w", orderID, err)
+	}
+
+	if order == nil {
+		return nil, models.ErrOrderNotFound
+	}
+
+	if user.Role == models.DeliveryMan && order.DeliverymanID != nil && *order.DeliverymanID != userID {
+		return nil, models.ErrNotAssignedToOrder
+	}
+
+	return order.ToOrderDetailsResponse(), nil
 }
