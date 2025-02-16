@@ -10,6 +10,7 @@ import (
 	"github.com/G-Villarinho/fast-feet-api/models"
 	"github.com/G-Villarinho/fast-feet-api/repositories"
 	"github.com/G-Villarinho/fast-feet-api/request"
+	"github.com/G-Villarinho/fast-feet-api/services/email"
 	"github.com/google/uuid"
 )
 
@@ -23,6 +24,8 @@ type OrderService interface {
 
 type orderService struct {
 	i  *di.Injector
+	ef *email.EmailFactory
+	es email.EmailService
 	fs FileService
 	or repositories.OrderRepository
 	rr repositories.RecipientRepository
@@ -30,6 +33,13 @@ type orderService struct {
 }
 
 func NewOrderService(i *di.Injector) (OrderService, error) {
+	ef := email.NewEmailFactory()
+
+	es, err := di.Invoke[email.EmailService](i)
+	if err != nil {
+		return nil, fmt.Errorf("invoke email service: %w", err)
+	}
+
 	fs, err := di.Invoke[FileService](i)
 	if err != nil {
 		return nil, fmt.Errorf("invoke file service: %w", err)
@@ -52,6 +62,8 @@ func NewOrderService(i *di.Injector) (OrderService, error) {
 
 	return &orderService{
 		i:  i,
+		ef: ef,
+		es: es,
 		fs: fs,
 		or: or,
 		rr: rr,
@@ -130,7 +142,10 @@ func (o *orderService) PickUpOrder(ctx context.Context, orderID uuid.UUID) (*mod
 		return nil, fmt.Errorf("update order %q status: %w", orderID, err)
 	}
 
-	// TODO: Notification recipient
+	go func() {
+		sendEmailPayload := o.ef.CreatePickUpSendEmail(order.Recipient.Email, "Pedido em rota de entrega", order.Recipient.FullName, order.TrackingCode.String())
+		o.es.SendEmail(ctx, sendEmailPayload)
+	}()
 
 	return &models.PickUpOrderResponse{
 		PicknUpAt: order.PicknUpAt.Time,

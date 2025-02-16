@@ -5,6 +5,7 @@ type Environment struct {
 	Redis    Redis
 	API      API
 	Session  Session
+	SMTP     SMTP
 }
 
 type Postgres struct {
@@ -36,4 +37,11 @@ type Session struct {
 	TokenExp   int    `env:"TOKEN_EXP,default=6"`
 	JWTSecret  string `env:"JWT_SECRET"`
 	CookieName string `env:"COOKIE_NAME"`
+}
+
+type SMTP struct {
+	Host     string `env:"SMTP_HOST"`
+	Port     int    `env:"SMTP_PORT"`
+	User     string `env:"SMTP_USER"`
+	Password string `env:"SMTP_PASSWORD"`
 }

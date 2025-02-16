@@ -10,7 +10,9 @@ import (
 	"github.com/G-Villarinho/fast-feet-api/middlewares"
 	"github.com/G-Villarinho/fast-feet-api/repositories"
 	"github.com/G-Villarinho/fast-feet-api/services"
+	"github.com/G-Villarinho/fast-feet-api/services/email"
 	"github.com/G-Villarinho/fast-feet-api/storage"
+	"github.com/G-Villarinho/fast-feet-api/templates"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"gorm.io/gorm"
@@ -38,6 +40,9 @@ func main() {
 	di.Provide(i, func(d *di.Injector) (*gorm.DB, error) {
 		return DB, nil
 	})
+
+	di.Provide(i, templates.NewTemplate)
+	di.Provide(i, email.NewEmailService)
 
 	di.Provide(i, handlers.NewAuthHandler)
 	di.Provide(i, handlers.NewOrderHandler)

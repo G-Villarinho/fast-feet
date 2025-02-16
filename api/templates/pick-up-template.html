@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notificação de Retirada de Pacote</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7fc;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background-color: #ffbc00;
+            padding: 20px;
+            color: #fff;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .content {
+            padding: 20px;
+            color: #333;
+        }
+
+        .content h2 {
+            font-size: 20px;
+            color: #333;
+        }
+
+        .content p {
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .footer {
+            background-color: #f1f3f5;
+            padding: 15px;
+            text-align: center;
+            color: #888;
+            font-size: 14px;
+        }
+
+        .button {
+            display: inline-block;
+            background-color: #ffbc00;
+            color: #fff;
+            padding: 12px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .button:hover {
+            background-color: #eaa300;
+        }
+
+        .tracking-info {
+            background-color: #f9f9f9;
+            padding: 10px;
+            margin-top: 20px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .tracking-code {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffbc00;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Seu Pacote Está a Caminho!</h1>
+        </div>
+        <div class="content">
+            <h2>Olá #recipient_name#,</h2>
+            <p>Queremos informar que o seu pacote foi retirado com sucesso e está a caminho. O entregador está seguindo
+                para o seu endereço de entrega.</p>
+            <p>Fique tranquilo(a), nosso time de entregadores está trabalhando para garantir que a sua encomenda chegue
+                o mais rápido possível!</p>
+            <p>Você pode acompanhar o status do seu pacote a qualquer momento. Se houver qualquer imprevisto, entraremos
+                em contato para mantê-lo(a) informado(a).</p>
+
+            <div class="tracking-info">
+                <p><strong>Código de Rastreamento:</strong></p>
+                <p class="tracking-code">#tracking_code#</p>
+            </div>
+        </div>
+        <div class="footer">
+            <p>&copy; #current_year# Fast Feet. Todos os direitos reservados.</p>
+        </div>
+    </div>
+</body>
+
+</html>
