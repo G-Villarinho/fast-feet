@@ -10,10 +10,15 @@ import { useQuery } from "@tanstack/react-query";
 import packageImg from "@/assets/package.svg";
 import { OrderCardSkeleton } from "./order-card-skeleton";
 import { Helmet } from "react-helmet-async";
+import { useContext } from "react";
+import { UserContext } from "@/contexts/user/user-context";
+import { Role } from "@/api/get-user";
 
 const ORDERS_LIMIT_PAGE = 9;
 
 export function Orders() {
+  const { user } = useContext(UserContext);
+
   const [searchParams] = useSearchParams();
 
   const pageIndex = z.coerce.number().parse(searchParams.get("page") ?? "1");
@@ -23,6 +28,8 @@ export function Orders() {
     queryFn: () => getOrders({ pageIndex, limit: ORDERS_LIMIT_PAGE }),
   });
 
+  const isAdmin = user?.role === Role.admin;
+
   return (
     <>
       <Helmet title="Pedidos" />
@@ -30,12 +37,14 @@ export function Orders() {
         <Card className="border-none drop-shadow-sm">
           <CardHeader className="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
             <CardTitle className="text-xl line-clamp-1">Encomendas</CardTitle>
-            <Button asChild size="sm">
-              <Link to="/create-order">
-                <Plus className="size-4 mr-2" />
-                Criar encomenda
-              </Link>
-            </Button>
+            {isAdmin && (
+              <Button asChild size="sm">
+                <Link to="/create-order">
+                  <Plus className="size-4 mr-2" />
+                  Criar encomenda
+                </Link>
+              </Button>
+            )}
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
