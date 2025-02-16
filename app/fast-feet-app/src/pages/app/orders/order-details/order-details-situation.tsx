@@ -11,12 +11,6 @@ import { ptBR } from "date-fns/locale";
 import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { Loader2 } from "lucide-react";
 
 interface OrderDetailsSituationProps {
@@ -133,43 +127,24 @@ export function OrderDetailsSituation({
         </div>
 
         <div className="col-span-2 flex justify-center mt-4">
-          {status === OrderStatus.waiting && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger className="w-full" asChild>
-                  <Button
-                    className="w-full"
-                    onClick={handlePickUpOrder}
-                    disabled={!isDeliveryMan}
-                  >
-                    {isPending ? (
-                      <Loader2 className="size-4 animate-spin" />
-                    ) : (
-                      "Retirar pacote"
-                    )}
-                  </Button>
-                </TooltipTrigger>
-                {!isDeliveryMan && (
-                  <TooltipContent>
-                    Somente entregadores podem retirar a encomenda
-                  </TooltipContent>
-                )}
-              </Tooltip>
-            </TooltipProvider>
+          {status === OrderStatus.waiting && isDeliveryMan && (
+            <Button
+              className="w-full"
+              onClick={handlePickUpOrder}
+              disabled={isPending}
+            >
+              {isPending ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                "Retirar pacote"
+              )}
+            </Button>
           )}
-          {status === OrderStatus.picknUp && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger className="w-full">
-                  <Button className="w-full" asChild disabled={!isDeliveryMan}>
-                    <Link to={`/orders/${orderId}/delivery`}>Entregar</Link>
-                  </Button>
-                </TooltipTrigger>
-                {!isDeliveryMan && (
-                  <TooltipContent>Entregar Pacote</TooltipContent>
-                )}
-              </Tooltip>
-            </TooltipProvider>
+
+          {status === OrderStatus.picknUp && isDeliveryMan && (
+            <Button className="w-full">
+              <Link to={`/orders/${orderId}/delivery`}>Entregar</Link>
+            </Button>
           )}
         </div>
       </div>

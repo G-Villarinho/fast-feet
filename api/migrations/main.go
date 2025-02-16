@@ -62,6 +62,18 @@ func seedUsers(db *gorm.DB) {
 			Status:       models.ActiveStatus,
 			Role:         models.DeliveryMan,
 		},
+		{
+			BaseModel: models.BaseModel{
+				ID:        uuid.New(),
+				CreatedAt: time.Now().UTC(),
+			},
+			CPF:          "23503028064",
+			FullName:     "Delivery User 1",
+			Email:        "delivery1@fastfeet.com",
+			PasswordHash: "$2y$10$QtkenSL2ECTKogeczO21t.cZgFjwQj2hxxFAf2WL.4oaJnkMEY9SG",
+			Status:       models.ActiveStatus,
+			Role:         models.DeliveryMan,
+		},
 	}
 
 	for _, user := range users {

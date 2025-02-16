@@ -22,9 +22,14 @@ function getInitials(name: string): string {
 interface UserButtonProps {
   userFullName?: string;
   isFetchingUser?: boolean;
+  logoutUser: () => void;
 }
 
-export function UserButton({ userFullName, isFetchingUser }: UserButtonProps) {
+export function UserButton({
+  userFullName,
+  isFetchingUser,
+  logoutUser,
+}: UserButtonProps) {
   const navigate = useNavigate();
 
   const { mutateAsync: logoutFn, isPending } = useMutation({
@@ -33,6 +38,7 @@ export function UserButton({ userFullName, isFetchingUser }: UserButtonProps) {
 
   async function handleLogout() {
     try {
+      logoutUser();
       navigate("/login");
       await logoutFn();
     } catch {

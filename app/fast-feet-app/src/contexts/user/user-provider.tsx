@@ -1,6 +1,6 @@
-import { getUser } from "@/api/get-user";
+import { getUser, GetUserResponse } from "@/api/get-user";
 import { useQuery } from "@tanstack/react-query";
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import { UserContext } from "@/contexts/user/user-context";
 
 interface UserProviderProps {
@@ -8,14 +8,26 @@ interface UserProviderProps {
 }
 
 export function UserProvider({ children }: UserProviderProps) {
+  const [user, setUser] = useState<GetUserResponse | null>(null);
+
   const { data: result, isFetching } = useQuery({
     queryKey: ["user"],
     queryFn: getUser,
-    staleTime: 1000 * 60 * 5,
+    enabled: user === null || user === undefined,
   });
 
+  if (result && user !== result) {
+    setUser(result);
+  }
+
+  function logout() {
+    setUser(null);
+  }
+
   return (
-    <UserContext.Provider value={{ user: result, isFetchingUser: isFetching }}>
+    <UserContext.Provider
+      value={{ user: user, isFetchingUser: isFetching, logout: logout }}
+    >
       {children}
     </UserContext.Provider>
   );

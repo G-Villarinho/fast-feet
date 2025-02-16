@@ -8,6 +8,7 @@ import { Recipients } from "@/pages/app/recipients/recipients";
 import { CreateRecipient } from "@/pages/app/recipients/create-recipient/create-recipient";
 import { Orders } from "@/pages/app/orders/orders/orders";
 import { OrderDetails } from "./pages/app/orders/order-details/order-details";
+import { Forbidden } from "./pages/403";
 
 export const router = createBrowserRouter([
   {
@@ -36,6 +37,11 @@ export const router = createBrowserRouter([
         element: <CreateRecipient />,
       },
     ],
+  },
+
+  {
+    path: "/forbidden",
+    element: <Forbidden />,
   },
 
   {

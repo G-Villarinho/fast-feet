@@ -21,6 +21,12 @@ export function AppLayout() {
               replace: true,
             });
           }
+
+          if (status === 403 && code === "FORBIDDEN") {
+            navigate("/forbidden", {
+              replace: true,
+            });
+          }
         }
         return Promise.reject(error);
       }

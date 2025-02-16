@@ -6,7 +6,7 @@ import { UserContext } from "@/contexts/user/user-context";
 import { UserButton } from "./user-button";
 
 export function Header() {
-  const { user, isFetchingUser } = useContext(UserContext);
+  const { user, isFetchingUser, logout } = useContext(UserContext);
 
   return (
     <header className="bg-gradient-to-b from-violet-800 to-violet-600 px-4 py-8 lg:px-14 pb-36">
@@ -19,6 +19,7 @@ export function Header() {
           <UserButton
             userFullName={user?.fullName}
             isFetchingUser={isFetchingUser}
+            logoutUser={logout}
           />
         </div>
         <WelcomeMessage
